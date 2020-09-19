@@ -19,15 +19,26 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    compile 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
-    testImplementation 'io.projectreactor:reactor-test'
+    // Google Calendar dependencies
+    compile 'com.google.api-client:google-api-client:1.23.0'
+    compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+    compile 'com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'
+    compile 'com.google.apis:google-api-services-admin-directory:directory_v1-rev53-1.20.0'
+    // View dependency
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.3.4.RELEASE'
+
+    // Test dependencies
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.3.4.RELEASE'
+    testCompile group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.6.2'
+    testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.7.0'
+    testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.5.10'
+    compile group: 'org.apache.maven.plugins', name: 'maven-surefire-plugin', version: '3.0.0-M3'
+
 }
 
 test {
