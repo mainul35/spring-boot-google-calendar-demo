@@ -23,7 +23,9 @@ public class CalendarEventsController {
 
     @RequestMapping("/agenda")
     public String getCalendarEvents(HttpSession session, Model model) {
-        String accessToken =  session.getAttribute(SessionKey.GOOGLE_OAUTH_TOKEN.toString()).toString();
+        String accessToken =  session.getAttribute(SessionKey.GOOGLE_OAUTH_TOKEN.toString()) == null
+                ? "" : session.getAttribute(SessionKey.GOOGLE_OAUTH_TOKEN.toString()).toString();
+
         if (accessToken == null || accessToken.isBlank()) {
             return "errors/unauthorized";
         }
