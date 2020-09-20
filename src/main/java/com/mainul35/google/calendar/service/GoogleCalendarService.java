@@ -3,7 +3,6 @@ package com.mainul35.google.calendar.service;
 import com.google.gson.Gson;
 import com.mainul35.google.calendar.dto.Event;
 import com.mainul35.google.calendar.dto.Events;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
@@ -11,10 +10,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,7 +63,8 @@ public class GoogleCalendarService {
         LocalDateTime localDateTime = LocalDateTime.parse(time);
         LocalDateTime now = LocalDateTime.now();
         int endHour = (LocalDateTime.now().getHour() - (LocalDateTime.now().getHour() % 24)) + 24;
-        return ((int)Duration.between(now, localDateTime).getSeconds())/(60*60*24) >= 0
+
+        return localDateTime.isAfter(now)
                 && localDateTime.getHour() < endHour;
     }
 }
