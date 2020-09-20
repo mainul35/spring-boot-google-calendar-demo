@@ -1,26 +1,34 @@
 package com.mainul35.google.calendar.controller;
 
-import com.google.api.services.calendar.model.Event;
+import com.mainul35.google.calendar.dto.Event;
+import com.mainul35.google.calendar.enums.SessionKey;
 import com.mainul35.google.calendar.service.GoogleCalendarService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
-@RestController
+@Controller
 public class CalendarEventsController {
 
     private final GoogleCalendarService googleCalendarService;
 
-    public CalendarEventsController(GoogleCalendarService googleCalendarService) {
+    public CalendarEventsController(GoogleCalendarService googleCalendarService, ClientRegistrationRepository clientRegistrationRepository, RestTemplate restTemplate) {
         this.googleCalendarService = googleCalendarService;
     }
 
-    @RequestMapping("/events")
-    public String getCalendarEvents() throws IOException, GeneralSecurityException {
-        List<Event> events = googleCalendarService.getCalendarEvents();
-        return "events printed in console.";
+    @RequestMapping("/agenda")
+    public String getCalendarEvents(HttpSession session, Model model) {
+        String accessToken =  session.getAttribute(SessionKey.GOOGLE_OAUTH_TOKEN.toString()).toString();
+        if (accessToken == null || accessToken.isBlank()) {
+            return "errors/unauthorized";
+        }
+        List<Event> events = googleCalendarService.getCalendarEvents(accessToken);
+        model.addAttribute("events", events);
+        return "agenda";
     }
 }

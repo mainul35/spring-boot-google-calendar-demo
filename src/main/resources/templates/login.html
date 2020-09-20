@@ -7,6 +7,8 @@
     <title>index</title>
 </head>
 <body>
-<a href="https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=994497706278-h9hjjj9ubg52s1qhr7phkg00u6qp3plf.apps.googleusercontent.com&redirect_uri=http://localhost:8080/Callback&response_type=code&scope=https://www.googleapis.com/auth/calendar">Login with Google</a>
-</body>
+<h3>Login with:</h3>
+<p th:each="url : ${urls}">
+    <a th:text="${url.key}" th:href="${url.value}">Client</a>
+</p></body>
 </html>
