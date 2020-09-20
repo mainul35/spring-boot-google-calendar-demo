@@ -14,7 +14,7 @@
     </thead>
     <tbody>
     <tr th:each="event: ${events}">
-        <td th:text="${event.start.dateTime}"></td>
+        <td> <span th:text="${event.start.dateTime}"></span> - <span th:text="${event.end.dateTime}"></span></td>
         <td th:text="${event.summary}"></td>
     </tr>
     </tbody>
