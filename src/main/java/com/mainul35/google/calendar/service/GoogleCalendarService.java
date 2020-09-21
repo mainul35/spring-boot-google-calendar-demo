@@ -11,7 +11,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,25 +43,53 @@ public class GoogleCalendarService {
 
         Gson gson = new Gson();
         Events events = gson.fromJson(response.getBody(), Events.class);
-        return events.getItems().stream().filter(this::checkIfTheEventIsWithinRange)
-        .map(event -> {
-          String start = parseDateTime(event.getStart().getDateTime());
-          String end = parseDateTime(event.getEnd().getDateTime());
-          event.getStart().setDateTime(start);
-          event.getEnd().setDateTime(end);
-          return event;
-        })
+        List<Event> eventList = events
+                .getItems()
+                .stream()
+                // Filter only today's events
+                .filter(this::checkIfTheEventIsWithinRange)
+                .map(this::setOnlyTimeToEvent)
                 .collect(Collectors.toList());
+
+        // Sort by ending time
+        sortByEndTime(eventList);
+        return eventList;
     }
 
-    public String parseDateTime(String datetime) {
+    private List<Event> sortByEndTime(List<Event> events) {
+        Collections.sort(events, new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+                LocalTime startO1 = LocalTime.parse(o1.getStart().getDateTime(), formatter);
+                LocalTime endO1 = LocalTime.parse(o1.getStart().getDateTime(), formatter);
+                LocalTime startO2 = LocalTime.parse(o1.getStart().getDateTime(), formatter);
+                LocalTime endO2 = LocalTime.parse(o1.getStart().getDateTime(), formatter);
+
+                return startO1.minusHours(startO2.getHour()).getHour() == 0
+                        && startO1.minusMinutes(startO2.getMinute()).getMinute() == 0
+                        && endO2.getHour() == endO1.getHour()
+                        && endO2.getMinute() <= endO1.getMinute() ? -1 : 1;
+            }
+        });
+        return events;
+    }
+
+    private Event setOnlyTimeToEvent(Event event) {
+        String start = parseDateTime(event.getStart().getDateTime());
+        String end = parseDateTime(event.getEnd().getDateTime());
+        event.getStart().setDateTime(start);
+        event.getEnd().setDateTime(end);
+        return event;
+    }
+    private String parseDateTime(String datetime) {
         String time = datetime.replace("+", " ").split(" ")[0];
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
         LocalDateTime localDateTime = LocalDateTime.parse(time);
         return localDateTime.format(formatter);
     }
 
-    public boolean checkIfTheEventIsWithinRange(Event event) {
+    private boolean checkIfTheEventIsWithinRange(Event event) {
         String time = event.getStart().getDateTime().replace("+", " ").split(" ")[0];
         LocalDateTime localDateTime = LocalDateTime.parse(time);
         LocalDateTime now = LocalDateTime.now();
