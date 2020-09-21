@@ -1,14 +1,23 @@
 package com.mainul35.google.calendar.service;
 
 import com.mainul35.google.calendar.dto.OauthResponse;
+import org.bouncycastle.util.encoders.Base64Encoder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Base64;
+
 @Service
 public class OauthTokenService {
+
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String CLIENT_ID;
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String CLIENT_SECRET;
 
     private final RestTemplate restTemplate;
 
@@ -20,7 +29,8 @@ public class OauthTokenService {
         final String uri = "https://accounts.google.com/o/oauth2/token";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add("Authorization", "Basic MzE2NTA4Mzg3MzUwLTlmY2txczllcDV2Y3QzaWFyNDIyYjA5NnVkNXJpcjZwLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tOnBZV2RhQ2ZVTGlhNnpfczB2eW5nSmV3dA==");
+        String clientCredentials = Base64.getEncoder().encodeToString((CLIENT_ID+":"+CLIENT_SECRET).getBytes());
+        headers.add("Authorization", "Basic "+clientCredentials);
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("code", code);
         requestBody.add("grant_type", "authorization_code");
