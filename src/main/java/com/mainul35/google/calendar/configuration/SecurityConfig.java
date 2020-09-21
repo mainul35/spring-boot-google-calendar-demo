@@ -25,7 +25,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .oauth2Login()
-                .authorizedClientService(authorizedClientService);
+                .authorizedClientService(authorizedClientService)
+        .and().exceptionHandling().accessDeniedPage("/unauthorized");
         // @formatter:on
     }
 

@@ -2,6 +2,7 @@ package com.mainul35.google.calendar.controller;
 
 import com.mainul35.google.calendar.dto.Event;
 import com.mainul35.google.calendar.enums.SessionKey;
+import com.mainul35.google.calendar.exception.CalendarAccessDeniedException;
 import com.mainul35.google.calendar.service.GoogleCalendarService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Controller;
@@ -27,7 +28,7 @@ public class CalendarEventsController {
                 ? "" : session.getAttribute(SessionKey.GOOGLE_OAUTH_TOKEN.toString()).toString();
 
         if (accessToken == null || accessToken.isBlank()) {
-            return "errors/unauthorized";
+            throw new CalendarAccessDeniedException("Invalid token");
         }
         List<Event> events = googleCalendarService.getCalendarEvents(accessToken);
         model.addAttribute("events", events);

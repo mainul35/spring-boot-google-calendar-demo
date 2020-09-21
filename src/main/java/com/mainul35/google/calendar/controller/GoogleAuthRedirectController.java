@@ -1,8 +1,10 @@
 package com.mainul35.google.calendar.controller;
 
 import com.mainul35.google.calendar.enums.SessionKey;
+import com.mainul35.google.calendar.exception.CalendarAccessDeniedException;
 import com.mainul35.google.calendar.service.OauthTokenService;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,12 +27,19 @@ public class GoogleAuthRedirectController {
             HttpServletRequest request,
             HttpSession httpSession) {
         String code = request.getParameter("code");
+        String accessDenied = request.getParameter("access_denied") == null
+                ? "" : request.getParameter("access_denied");
+        if (!accessDenied.isBlank()) throw new CalendarAccessDeniedException("Authorization from google failed");
         String error = request.getParameter("error") == null
                 ? "" : request.getParameter("error");
+        if (!error.isBlank()) throw new CalendarAccessDeniedException("Authorization from google failed");
         String[] scopes = request.getParameter("scope").split(" ");
-        if (!error.isBlank() || code.isBlank()) return "errors/unauthorized";
+        if (code.isBlank()) throw new CalendarAccessDeniedException("Authorization from google failed");
         String scopeWithCalendarPermission =
-                Stream.of(scopes).filter(s -> s.contains("calendar")).findFirst().get();
+                Stream.of(scopes)
+                        .filter(s -> s.contains("calendar"))
+                        .findFirst()
+                        .orElseThrow(() -> new CalendarAccessDeniedException("You must have to allow calendar data to be accessed."));
         httpSession
                 .setAttribute(SessionKey.GOOGLE_OAUTH_TOKEN.toString(),
                         oauthTokenService.fetchToken(code, scopeWithCalendarPermission)
