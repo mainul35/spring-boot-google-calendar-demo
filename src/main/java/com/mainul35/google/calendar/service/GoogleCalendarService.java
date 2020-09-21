@@ -62,9 +62,9 @@ public class GoogleCalendarService {
         String time = event.getStart().getDateTime().replace("+", " ").split(" ")[0];
         LocalDateTime localDateTime = LocalDateTime.parse(time);
         LocalDateTime now = LocalDateTime.now();
-        int endHour = (LocalDateTime.now().getHour() - (LocalDateTime.now().getHour() % 24)) + 24;
+        int endHour = (now.getHour() - (now.getHour() % 24)) + 24 - now.getHour();
 
         return localDateTime.isAfter(now)
-                && localDateTime.getHour() < endHour;
+                && localDateTime.isBefore(now.plusHours(endHour));
     }
 }

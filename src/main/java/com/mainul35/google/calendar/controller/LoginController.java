@@ -27,11 +27,9 @@ public class LoginController {
     Map<String, String> oauth2AuthenticationUrls
             = new HashMap<>();
     private final ClientRegistrationRepository clientRegistrationRepository;
-    private final OAuth2AuthorizedClientService authorizedClientService;
 
-    public LoginController(ClientRegistrationRepository clientRegistrationRepository, OAuth2AuthorizedClientService authorizedClientService) {
+    public LoginController(ClientRegistrationRepository clientRegistrationRepository) {
         this.clientRegistrationRepository = clientRegistrationRepository;
-        this.authorizedClientService = authorizedClientService;
     }
 
     @RequestMapping("/")
