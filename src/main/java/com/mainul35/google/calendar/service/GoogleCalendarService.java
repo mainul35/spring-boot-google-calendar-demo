@@ -72,6 +72,7 @@ public class GoogleCalendarService {
                         && endO2.getMinute() <= endO1.getMinute() ? -1 : 1;
             }
         });
+        Collections.reverse(events);
         return events;
     }
 
@@ -93,8 +94,7 @@ public class GoogleCalendarService {
         String time = event.getStart().getDateTime().replace("+", " ").split(" ")[0];
         LocalDateTime localDateTime = LocalDateTime.parse(time);
         LocalDateTime now = LocalDateTime.now();
-        int endHour = (now.getHour() - (now.getHour() % 24)) + 24 - now.getHour();
-
+        int endHour = 24 - now.getHour();
         return localDateTime.isAfter(now)
                 && localDateTime.isBefore(now.plusHours(endHour));
     }
