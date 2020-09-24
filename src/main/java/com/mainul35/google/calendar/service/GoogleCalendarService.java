@@ -62,17 +62,16 @@ public class GoogleCalendarService {
             public int compare(Event o1, Event o2) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
                 LocalTime startO1 = LocalTime.parse(o1.getStart().getDateTime(), formatter);
-                LocalTime endO1 = LocalTime.parse(o1.getStart().getDateTime(), formatter);
-                LocalTime startO2 = LocalTime.parse(o1.getStart().getDateTime(), formatter);
-                LocalTime endO2 = LocalTime.parse(o1.getStart().getDateTime(), formatter);
-
+                LocalTime endO1 = LocalTime.parse(o1.getEnd().getDateTime(), formatter);
+                LocalTime startO2 = LocalTime.parse(o2.getStart().getDateTime(), formatter);
+                LocalTime endO2 = LocalTime.parse(o2.getEnd().getDateTime(), formatter);
+                if (startO1.getHour() != startO2.getHour()) return 0;
                 return startO1.minusHours(startO2.getHour()).getHour() == 0
                         && startO1.minusMinutes(startO2.getMinute()).getMinute() == 0
                         && endO2.getHour() == endO1.getHour()
-                        && endO2.getMinute() <= endO1.getMinute() ? -1 : 1;
+                        && endO2.getMinute() <= endO1.getMinute() ? 1 : -1;
             }
         });
-        Collections.reverse(events);
         return events;
     }
 
