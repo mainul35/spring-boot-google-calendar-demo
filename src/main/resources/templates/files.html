@@ -8,14 +8,14 @@
 <table>
     <thead>
     <tr>
-        <th>Time</th>
-        <th>Summary</th>
+        <th>ID</th>
+        <th>Name</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="event: ${events}">
-        <td> <span th:text="${event.start.dateTime}"></span> - <span th:text="${event.end.dateTime}"></span></td>
-        <td th:text="${event.summary}"></td>
+    <tr th:each="file: ${files.getFiles()}">
+        <td><span th:text="${file.id}"></span></td>
+        <td th:text="${file.name}"></td>
     </tr>
     </tbody>
 </table>
