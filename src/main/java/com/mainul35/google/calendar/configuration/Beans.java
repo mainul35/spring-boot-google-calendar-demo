@@ -62,7 +62,7 @@ public class Beans {
             return CommonOAuth2Provider.GOOGLE.getBuilder(client)
                     .clientId(clientId)
                     .clientSecret(clientSecret)
-                    .redirectUriTemplate(redirectUri)
+                    .redirectUri(redirectUri)
                     .scope(scopes)
                     .build();
         }

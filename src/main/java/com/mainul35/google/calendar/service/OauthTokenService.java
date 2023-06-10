@@ -1,7 +1,6 @@
 package com.mainul35.google.calendar.service;
 
 import com.mainul35.google.calendar.dto.OauthResponse;
-import org.bouncycastle.util.encoders.Base64Encoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
