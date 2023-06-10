@@ -10,11 +10,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,7 +45,7 @@ public class GoogleCalendarService {
                 .getItems()
                 .stream()
                 // Filter only today's events
-                .filter(this::checkIfTheEventIsWithinRange)
+//                .filter(this::checkIfTheEventIsWithinRange)
                 .map(this::setOnlyTimeToEvent)
                 .collect(Collectors.toList());
 
@@ -56,23 +54,20 @@ public class GoogleCalendarService {
         return eventList;
     }
 
-    private List<Event> sortByEndTime(List<Event> events) {
-        Collections.sort(events, new Comparator<Event>() {
-            @Override
-            public int compare(Event o1, Event o2) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
-                LocalTime startO1 = LocalTime.parse(o1.getStart().getDateTime(), formatter);
-                LocalTime endO1 = LocalTime.parse(o1.getEnd().getDateTime(), formatter);
-                LocalTime startO2 = LocalTime.parse(o2.getStart().getDateTime(), formatter);
-                LocalTime endO2 = LocalTime.parse(o2.getEnd().getDateTime(), formatter);
-                if (startO1.getHour() != startO2.getHour()) return 0;
-                return startO1.minusHours(startO2.getHour()).getHour() == 0
-                        && startO1.minusMinutes(startO2.getMinute()).getMinute() == 0
-                        && endO2.getHour() == endO1.getHour()
-                        && endO2.getMinute() <= endO1.getMinute() ? 1 : -1;
-            }
+    private void sortByEndTime(List<Event> events) {
+        events.sort((o1, o2) -> {
+            if (o1.getStart().getDateTime() == null || o2.getStart().getDateTime() == null) return 0;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+            LocalTime startO1 = LocalTime.parse(o1.getStart().getDateTime(), formatter);
+            LocalTime endO1 = LocalTime.parse(o1.getEnd().getDateTime(), formatter);
+            LocalTime startO2 = LocalTime.parse(o2.getStart().getDateTime(), formatter);
+            LocalTime endO2 = LocalTime.parse(o2.getEnd().getDateTime(), formatter);
+            if (startO1.getHour() != startO2.getHour()) return 0;
+            return startO1.minusHours(startO2.getHour()).getHour() == 0
+                    && startO1.minusMinutes(startO2.getMinute()).getMinute() == 0
+                    && endO2.getHour() == endO1.getHour()
+                    && endO2.getMinute() <= endO1.getMinute() ? 1 : -1;
         });
-        return events;
     }
 
     private Event setOnlyTimeToEvent(Event event) {
@@ -83,18 +78,18 @@ public class GoogleCalendarService {
         return event;
     }
     private String parseDateTime(String datetime) {
-        String time = datetime.replace("+", " ").split(" ")[0];
+        if (datetime == null) return null;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
-        LocalDateTime localDateTime = LocalDateTime.parse(time);
-        return localDateTime.format(formatter);
+        var zonedDateTime = ZonedDateTime.parse(datetime);
+        return zonedDateTime.format(formatter);
     }
 
     private boolean checkIfTheEventIsWithinRange(Event event) {
-        String time = event.getStart().getDateTime().replace("+", " ").split(" ")[0];
-        LocalDateTime localDateTime = LocalDateTime.parse(time);
-        LocalDateTime now = LocalDateTime.now();
+        if (event.getStart().getDateTime() == null) return false;
+        var zonedDateTime = ZonedDateTime.parse(event.getStart().getDateTime());
+        ZonedDateTime now = ZonedDateTime.now();
         int endHour = 24 - now.getHour();
-        return localDateTime.isAfter(now)
-                && localDateTime.isBefore(now.plusHours(endHour));
+        return zonedDateTime.isAfter(now)
+                && zonedDateTime.isBefore(now.plusHours(endHour));
     }
 }
