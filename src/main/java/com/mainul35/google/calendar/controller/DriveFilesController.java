@@ -1,7 +1,6 @@
 package com.mainul35.google.calendar.controller;
 
 import com.mainul35.google.calendar.dto.DriveFiles;
-import com.mainul35.google.calendar.dto.Event;
 import com.mainul35.google.calendar.enums.SessionKey;
 import com.mainul35.google.calendar.exception.CalendarAccessDeniedException;
 import com.mainul35.google.calendar.service.GoogleDriveService;
