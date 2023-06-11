@@ -1,22 +1,26 @@
 package com.mainul35.google.calendar.controller;
 
 import com.mainul35.google.calendar.dto.DriveFiles;
+import com.mainul35.google.calendar.dto.Event;
 import com.mainul35.google.calendar.enums.SessionKey;
 import com.mainul35.google.calendar.exception.CalendarAccessDeniedException;
 import com.mainul35.google.calendar.service.GoogleDriveService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
-public class CalendarEventsController {
+public class DriveFilesController {
 
     private final GoogleDriveService googleDriveService;
 
-    public CalendarEventsController(GoogleDriveService googleDriveService) {
-        this.googleDriveService = googleDriveService;
+    public DriveFilesController(GoogleDriveService googleCalendarService, ClientRegistrationRepository clientRegistrationRepository, RestTemplate restTemplate) {
+        this.googleDriveService = googleCalendarService;
     }
 
     @RequestMapping("/files")

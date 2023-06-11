@@ -67,7 +67,7 @@ goto fail
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+set CLASSPATH=C:\Users\YOGA\Downloads\gradle-8.1.1\bin\gradle.bat
 
 
 @rem Execute Gradle

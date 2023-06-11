@@ -1,33 +1,37 @@
 package com.mainul35.google.calendar.configuration;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.web.SecurityFilterChain;
 
+@Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final ClientRegistrationRepository clientRegistrationRepository;
+public class SecurityConfig {
     private final OAuth2AuthorizedClientService authorizedClientService;
 
-    public SecurityConfig(ClientRegistrationRepository clientRegistrationRepository, OAuth2AuthorizedClientService authorizedClientService) {
-        this.clientRegistrationRepository = clientRegistrationRepository;
+    public SecurityConfig(OAuth2AuthorizedClientService authorizedClientService) {
         this.authorizedClientService = authorizedClientService;
     }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // @formatter:off
         http
-                .authorizeRequests()
-                .antMatchers("/**", "/oauth2/callback/google").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .oauth2Login()
-                .authorizedClientService(authorizedClientService)
-        .and().exceptionHandling().accessDeniedPage("/unauthorized");
+            .authorizeHttpRequests(authorize ->
+                authorize
+                        .requestMatchers("/**", "/oauth2/callback/google", "/templates/**").permitAll()
+                        .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2Login -> {
+                oauth2Login.authorizedClientService(authorizedClientService);
+            })
+            .exceptionHandling( exceptionHandling ->
+                    exceptionHandling.accessDeniedPage("/unauthorized")
+            );
         // @formatter:on
+        return http.build();
     }
 
 

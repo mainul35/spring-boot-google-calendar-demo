@@ -1,7 +1,6 @@
 package com.mainul35.google.calendar.service;
 
 import com.mainul35.google.calendar.dto.OauthResponse;
-import org.bouncycastle.util.encoders.Base64Encoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,7 @@ public class OauthTokenService {
         requestBody.add("redirect_uri", "http://localhost:8080/oauth2/callback/google");
         requestBody.add("scope", scope);
 
-        HttpEntity formEntity = new HttpEntity<MultiValueMap<String, String>>(requestBody, headers);
+        HttpEntity<MultiValueMap<String, String>> formEntity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<OauthResponse> response = restTemplate.exchange(uri, HttpMethod.POST, formEntity,  OauthResponse.class);
         return response.getBody().getAccess_token();
