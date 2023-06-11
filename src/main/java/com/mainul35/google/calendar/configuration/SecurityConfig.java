@@ -21,7 +21,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize ->
                 authorize
-                        .requestMatchers("/**", "/oauth2/callback/google").permitAll()
+                        .requestMatchers("/**", "/oauth2/callback/google", "/templates/**").permitAll()
                         .anyRequest().authenticated()
             )
             .oauth2Login(oauth2Login -> {

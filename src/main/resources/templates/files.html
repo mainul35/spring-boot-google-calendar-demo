@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="file: ${files.getFiles()}">
+        <td><span th:text="${file.id}"></span></td>
+        <td th:text="${file.name}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
